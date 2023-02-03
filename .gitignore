@@ -46,3 +46,4 @@ lib*.pc
 # CMU-DB
 .idea
 ./build/
+build
