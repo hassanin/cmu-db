@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "request": "attach",
+            "name": "C/C++ Debug",
+            "program": "/workspaces/cmu-db/build/postgres/bin/postgres",
+            // "processId":"25892",
+             
+            //  "logging": {
+            //     "moduleLoad": true,
+            //     "engineLogging": true,
+            //     "trace": true
+            // },
+            "setupCommands": [
+                // {
+                //      "description": "Set sysroot ",
+                //      "text": "set sysroot <path_to_sysroot>"
+                // },
+                {
+                     "description": "Set solib",
+                     "text": "set solib-search-path /workspaces/cmu-db/build/postgres/lib:/workspaces/cmu-db/cmudb/extensions/db721_fdw/src/"
+                },
+                {
+                    "description": "Set solib",
+                    "text": "add-symbol-file /workspaces/cmu-db/build/postgres/lib/db721_fdw.so"
+               }
+            ]
+            // "MIMode": "gdb",
+            // "symbolLoadInfo": {
+            //     "loadAll": true,
+            //     "exceptionList": ""
+            // }
+        }
+    ]
+}

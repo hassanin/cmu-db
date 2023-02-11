@@ -13,7 +13,8 @@ if [ -z "$BUILD_DIR" ]; then
   BUILD_DIR="$(pwd)/build"
 fi
 
-CFLAGS_DEBUG="-ggdb -Og -g3 -m64 -fno-omit-frame-pointer"
+# CFLAGS_DEBUG="-ggdb -Og -g3 -m64 -fno-omit-frame-pointer"
+CFLAGS_DEBUG="-ggdb -O0 -g3 -m64 -fno-omit-frame-pointer"
 CFLAGS_RELEASE="-O3 -m64 -march=native"
 
 _parse_configure() {

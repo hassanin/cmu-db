@@ -11,6 +11,11 @@ MODULE_big = db721_fdw
 DATA = db721_fdw--0.0.1.sql
 OBJS = src/dog.o src/db721_fdw_impl.o src/db721_fdw.o
 SHLIB_LINK = -lstdc++
+# SHLIB_LINK_INTERNAL = $(libpq)
+# SHLIB_PREREQS = submake-libpq
+
+PG_CPPFLAGS = -I$(libpq_srcdir)
+SHLIB_LINK_INTERNAL = $(libpq)
 
 # If PG_CONFIG is not set, try the default NoisePage build folder first, then try PATH.
 PG_CONFIG ?= ../../../build/postgres/bin/pg_config
@@ -18,6 +23,7 @@ PG_CONFIG ?= pg_config
 
 override PG_CXXFLAGS += -std=c++17 		# We generally use C++17.
 override PG_CXXFLAGS += -Wno-register 	# PostgreSQL uses the register storage class.
+override PG_CXXFLAGS += -O0 	# PostgreSQL uses the register storage class.
 
 # From "man gcc",
 # > If you use multiple -O options, with or without level numbers, the last such option is the one that is effective.
