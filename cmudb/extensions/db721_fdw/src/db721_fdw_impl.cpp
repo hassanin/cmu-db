@@ -1,6 +1,9 @@
 // If you choose to use C++, read this very carefully:
 // https://www.postgresql.org/docs/15/xfunc-c.html#EXTEND-CPP
 // /workspaces/cmu-db/contrib/postgres_fdw/postgres_fdw.h
+// src/include/nodes/pathnodes.h
+// src/include/parser/parsetree.h
+//src/include/commands/defrem.h
 #include "dog.h"
 
 // clang-format off
@@ -8,7 +11,10 @@ extern "C" {
 #include "../../../../src/include/postgres.h"
 #include "../../../../src/include/fmgr.h"
 #include "../../../../src/include/foreign/fdwapi.h"
+#include "../../../../src/include/parser/parsetree.h"
 #include "../../../../src/include/optimizer/pathnode.h"
+#include "../../../../src/include/nodes/pathnodes.h"
+#include "../../../../src/include/commands/defrem.h"
 #include "../../../contrib/postgres_fdw/postgres_fdw.h"
 }
 // clang-format on
@@ -18,6 +24,58 @@ extern "C" void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
   // TODO(721): Write me!
   Dog terrier("Terrier");
   baserel->rows=100;
+PgFdwRelationInfo *fpinfo;
+	ListCell   *lc;
+	RangeTblEntry *rte = planner_rt_fetch(baserel->relid, root);
+
+	/*
+	 * We use PgFdwRelationInfo to pass various information to subsequent
+	 * functions.
+	 */
+	fpinfo = (PgFdwRelationInfo *) palloc0(sizeof(PgFdwRelationInfo));
+	baserel->fdw_private = (void *) fpinfo;
+
+	/* Base foreign tables need to be pushed down always. */
+	fpinfo->pushdown_safe = true;
+
+	/* Look up foreign-table catalog info. */
+	fpinfo->table = GetForeignTable(foreigntableid);
+	fpinfo->server = GetForeignServer(fpinfo->table->serverid);
+
+	/*
+	 * Extract user-settable option values.  Note that per-table settings of
+	 * use_remote_estimate, fetch_size and async_capable override per-server
+	 * settings of them, respectively.
+	 */
+	fpinfo->use_remote_estimate = false;
+	fpinfo->fdw_startup_cost = 100.0;
+	fpinfo->fdw_tuple_cost = 0.1;
+	fpinfo->shippable_extensions = NIL;
+	fpinfo->fetch_size = 100;
+	fpinfo->async_capable = false;
+
+  fpinfo->startup_cost=100;
+  fpinfo->total_cost=300;
+
+  auto options = fpinfo -> table->options;
+  auto op1 = list_head(options);
+  auto op2 = list_second_cell(options);
+  
+  DefElem    *def = (DefElem *) lfirst(op1);
+  auto x1 = def->defname;
+  auto *filename = defGetString(def);
+  def = (DefElem *) lfirst(op2);
+  x1 = def -> defname;
+  auto *tableName=defGetString(def);
+  elog(WARNING,"filename is %s and tablename is %s ",filename,tableName);
+		// if (strcmp(def->defname, "filename") == 0)
+		// {
+		// 	*filename = defGetString(def);
+		// 	options = foreach_delete_current(options, lc);
+		// 	break;
+		// }
+
+  // baserel->cheapest_startup_path
   elog(WARNING,"Happy 1");
   elog(LOG, "db721_GetForeignRelSize: %s", terrier.Bark().c_str());
 }
@@ -56,8 +114,8 @@ extern "C" void db721_GetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
   // baserel->pathlist
  PgFdwRelationInfo *fpinfo = (PgFdwRelationInfo *) baserel->fdw_private;
 	ForeignPath *path;
-	List	   *ppi_list;
-	ListCell   *lc;
+	// List	   *ppi_list;
+	// ListCell   *lc;
 
 	/*
 	 * Create simplest ForeignScan path node and add it to baserel.  This path
@@ -98,20 +156,21 @@ db721_GetForeignPlan(PlannerInfo *root, RelOptInfo *baserel, Oid foreigntableid,
 
 extern "C" void db721_BeginForeignScan(ForeignScanState *node, int eflags) {
   // TODO(721): Write me!
+  elog(WARNING,"Happy 4");
 }
 
 extern "C" TupleTableSlot *db721_IterateForeignScan(ForeignScanState *node) {
   // TODO(721): Write me!
-  elog(WARNING,"Happy 4");
+  elog(WARNING,"Happy 5");
   return nullptr;
 }
 
 extern "C" void db721_ReScanForeignScan(ForeignScanState *node) {
   // TODO(721): Write me!
-  elog(WARNING,"Happy 5");
+  elog(WARNING,"Happy 6");
 }
 
 extern "C" void db721_EndForeignScan(ForeignScanState *node) {
   // TODO(721): Write me!
-  elog(WARNING,"Happy 6");
+  elog(WARNING,"Happy 7");
 }
