@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS chicken
 \COPY farm FROM '/workspaces/cmu-db/cmudb/extensions/db721_fdw/data-farms.csv' CSV HEADER;
 \COPY chicken FROM '/workspaces/cmu-db/cmudb/extensions/db721_fdw/data-chickens.csv' CSV HEADER;
 
+DROP EXTENSION IF EXISTS db721_fdw CASCADE;
 CREATE EXTENSION IF NOT EXISTS db721_fdw;
 CREATE SERVER IF NOT EXISTS db721_server FOREIGN DATA WRAPPER db721_fdw;
 CREATE FOREIGN TABLE IF NOT EXISTS db721_farm

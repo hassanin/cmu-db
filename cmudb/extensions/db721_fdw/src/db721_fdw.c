@@ -31,6 +31,18 @@ extern void db721_EndForeignScan(ForeignScanState *node);
 
 PG_FUNCTION_INFO_V1(db721_fdw_handler);
 
+
+// Called upon extension load.
+// void _PG_init(void)
+// {
+// 	elog(WARNING,"in iniy2 extension");
+// 	elog(LOG,"in iniy2 extension");
+//     // Save the original hook value.
+//     // original_client_auth_hook = ClientAuthentication_hook;
+//     // // Register our handler.
+//     // ClientAuthentication_hook = auth_delay_checks; = 
+
+// }
 Datum db721_fdw_handler(PG_FUNCTION_ARGS) {
   // See the documentation in the definition of FdwRoutine.
   // You can also find documentation online:
@@ -48,3 +60,16 @@ Datum db721_fdw_handler(PG_FUNCTION_ARGS) {
 }
 
 PG_MODULE_MAGIC;
+
+extern void _PG_init(void);
+// Called with extension unload.
+extern void _PG_fini(void);
+// {
+// 	elog(WARNING,"in iniy2 extension");
+// 	elog(LOG,"in iniy2 extension");
+//     // Save the original hook value.
+//     // original_client_auth_hook = ClientAuthentication_hook;
+//     // // Register our handler.
+//     // ClientAuthentication_hook = auth_delay_checks; = 
+
+// }

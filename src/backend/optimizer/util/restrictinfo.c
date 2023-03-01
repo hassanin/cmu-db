@@ -451,7 +451,7 @@ extract_actual_clauses(List *restrictinfo_list,
 	foreach(l, restrictinfo_list)
 	{
 		RestrictInfo *rinfo = lfirst_node(RestrictInfo, l);
-
+		
 		if (rinfo->pseudoconstant == pseudoconstant)
 			result = lappend(result, rinfo->clause);
 	}

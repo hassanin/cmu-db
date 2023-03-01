@@ -28,13 +28,18 @@
                 {
                     "description": "Set solib",
                     "text": "add-symbol-file /workspaces/cmu-db/build/postgres/lib/db721_fdw.so"
-               }
-            ]
-            // "MIMode": "gdb",
-            // "symbolLoadInfo": {
-            //     "loadAll": true,
-            //     "exceptionList": ""
-            // }
+               },
+               {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+                }
+            ],
+            "MIMode": "gdb",
+            "symbolLoadInfo": {
+                "loadAll": true,
+                "exceptionList": ""
+            }
         }
     ]
 }
