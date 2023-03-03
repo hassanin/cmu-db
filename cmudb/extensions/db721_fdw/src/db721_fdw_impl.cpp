@@ -3,9 +3,10 @@
 // /workspaces/cmu-db/contrib/postgres_fdw/postgres_fdw.h
 // src/include/nodes/pathnodes.h
 // src/include/parser/parsetree.h
-//src/include/commands/defrem.h
-//src/include/optimizer/planmain.h
+// src/include/commands/defrem.h
+// src/include/optimizer/planmain.h
 // src/include/optimizer/restrictinfo.h
+// build/postgres/include/server/utils/builtins.h
 #include "dog.h"
 
 // clang-format off
@@ -20,70 +21,115 @@ extern "C" {
 #include "../../../../src/include/nodes/pathnodes.h"
 #include "../../../../src/include/commands/defrem.h"
 #include "../../../../src/include/executor/executor.h"
+#include "../../../../src/include/utils/builtins.h"
 #include "../../../contrib/postgres_fdw/postgres_fdw.h"
+#include "string"
 }
+static int count=0;
+#define LOVEMK1234 "mk232\0"
+bool NextCopyFromdb721(Datum *values, bool *nulls){
+
+		/* Initialize all values for row to NULL */
+	if(count <10)
+	{
+	int num_phys_attrs=3;
+	MemSet(values, 0, num_phys_attrs * sizeof(Datum));
+	MemSet(nulls, true, num_phys_attrs * sizeof(bool));
+	char* char_array = "Loce123\0";
+	auto ds1 = CStringGetTextDatum("sdsd");
+	char* c = (char*) palloc(11);
+	c[10]='\0';
+	c[0]='H';
+	c[2]='L';
+	// std::string *myS = new std::string("Love2323");
+	// const char* c_string1 = myS->c_str();
+	values[0] = ds1;//CStringGetDatum(char_array);
+	// values[0] = NameGetDatum(&char_array);
+	values[1] = Float4GetDatum(11.0);
+	values[2] = Float4GetDatum(12.0);
+	nulls[0]=false;
+	nulls[1]=false;
+	nulls[2]=false;
+	count++;
+	return true;
+	}
+	else{
+		return false;
+	}
+}
+typedef struct Foreigndb721
+{
+	int number;
+	char* tableName;
+	char* fileName;
+} Foreigndb721;
+static Foreigndb721* MyPointer;
+
 // clang-format on
 // typedef void (*ExecutorStart_hook_type) (QueryDesc *queryDesc, int eflags);
 static ExecutorStart_hook_type original_exec_start_hook = NULL;
-static int x=0;
+static int x = 0;
 // ExecutorStart_hook_type ExecutorStart_hook = NULL;
 // /src/include/executor/executor.h
 
-void myFunc(QueryDesc *queryDesc, int eflags){
-	x=8;
-	elog(WARNING,"Happy Mohamed 67");
-	elog(LOG,"Happy Mohamed 67");
-	elog(WARNING,"s");
-	if(original_exec_start_hook){
-	elog(LOG,"s");
-	elog(WARNING,"Extension Not Empty");
-		original_exec_start_hook(queryDesc,eflags);
+void myFunc(QueryDesc *queryDesc, int eflags)
+{
+	x = 8;
+	elog(WARNING, "Happy Mohamed 67");
+	elog(LOG, "Happy Mohamed 67");
+	elog(WARNING, "s");
+	if (original_exec_start_hook)
+	{
+		elog(LOG, "s");
+		elog(WARNING, "Extension Not Empty");
+		original_exec_start_hook(queryDesc, eflags);
 	}
-	else{
-	elog(WARNING,"Extension Empty");
+	else
+	{
+		elog(WARNING, "Extension Empty");
 	}
-	elog(WARNING,"query is %s",queryDesc->sourceText);
-	standard_ExecutorStart(queryDesc,eflags);
+	elog(WARNING, "query is %s", queryDesc->sourceText);
+	standard_ExecutorStart(queryDesc, eflags);
 }
 
 // Called upon extension load.
 extern "C" void _PG_init(void)
 {
-	x=7;
-	elog(WARNING,"in iniy extension");
-    // Save the original hook value.
-    // original_client_auth_hook = ClientAuthentication_hook;
-    // // Register our handler.
-    // ClientAuthentication_hook = auth_delay_checks; = 
+	x = 7;
+	elog(WARNING, "in iniy extension");
+	// Save the original hook value.
+	// original_client_auth_hook = ClientAuthentication_hook;
+	// // Register our handler.
+	// ClientAuthentication_hook = auth_delay_checks; =
 	original_exec_start_hook = ExecutorStart_hook;
-	
-	ExecutorStart_hook=myFunc;
+
+	ExecutorStart_hook = myFunc;
 }
 
 // Called with extension unload.
 extern "C" void _PG_fini(void)
 {
-    // Return back the original hook value.
-    // ClientAuthentication_hook = original_client_auth_hook;
+	// Return back the original hook value.
+	// ClientAuthentication_hook = original_client_auth_hook;
 	ExecutorStart_hook = original_exec_start_hook;
-
 }
 
 extern "C" void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
-                                      Oid foreigntableid) {
-  // TODO(721): Write me!
-  Dog terrier("Terrier");
-  baserel->rows=100;
-PgFdwRelationInfo *fpinfo;
-	ListCell   *lc;
+										Oid foreigntableid)
+{
+	// TODO(721): Write me!
+	Dog terrier("Terrier");
+	baserel->rows = 100;
+	PgFdwRelationInfo *fpinfo;
+	ListCell *lc;
 	RangeTblEntry *rte = planner_rt_fetch(baserel->relid, root);
 
 	/*
 	 * We use PgFdwRelationInfo to pass various information to subsequent
 	 * functions.
 	 */
-	fpinfo = (PgFdwRelationInfo *) palloc0(sizeof(PgFdwRelationInfo));
-	baserel->fdw_private = (void *) fpinfo;
+	fpinfo = (PgFdwRelationInfo *)palloc0(sizeof(PgFdwRelationInfo));
+	baserel->fdw_private = (void *)fpinfo;
 
 	/* Base foreign tables need to be pushed down always. */
 	fpinfo->pushdown_safe = true;
@@ -104,31 +150,36 @@ PgFdwRelationInfo *fpinfo;
 	fpinfo->fetch_size = 100;
 	fpinfo->async_capable = false;
 
-  fpinfo->startup_cost=100;
-  fpinfo->total_cost=300;
+	fpinfo->startup_cost = 100;
+	fpinfo->total_cost = 300;
 
-  auto options = fpinfo -> table->options;
-  auto op1 = list_head(options);
-  auto op2 = list_second_cell(options);
-  
-  DefElem    *def = (DefElem *) lfirst(op1);
-  auto x1 = def->defname;
-  auto *filename = defGetString(def);
-  def = (DefElem *) lfirst(op2);
-  x1 = def -> defname;
-  auto *tableName=defGetString(def);
-  elog(WARNING,"x is %i",x);
-  elog(WARNING,"filename is %s and tablename is %s ",filename,tableName);
-		// if (strcmp(def->defname, "filename") == 0)
-		// {
-		// 	*filename = defGetString(def);
-		// 	options = foreach_delete_current(options, lc);
-		// 	break;
-		// }
+	auto options = fpinfo->table->options;
+	auto op1 = list_head(options);
+	auto op2 = list_second_cell(options);
 
-  // baserel->cheapest_startup_path
-  elog(WARNING,"Happy 1  1111111111");
-  elog(LOG, "db721_GetForeignRelSize: %s", terrier.Bark().c_str());
+	DefElem *def = (DefElem *)lfirst(op1);
+	auto x1 = def->defname;
+	auto *filename = defGetString(def);
+	def = (DefElem *)lfirst(op2);
+	x1 = def->defname;
+	auto *tableName = defGetString(def);
+	elog(WARNING, "x is %i", x);
+	elog(WARNING, "filename is %s and tablename is %s ", filename, tableName);
+	Foreigndb721 *db721Opts = (Foreigndb721 *)palloc(sizeof(Foreigndb721));
+	db721Opts->number = 42;
+	db721Opts->fileName = filename;
+	db721Opts->tableName = tableName;
+	MyPointer = db721Opts;
+	// if (strcmp(def->defname, "filename") == 0)
+	// {
+	// 	*filename = defGetString(def);
+	// 	options = foreach_delete_current(options, lc);
+	// 	break;
+	// }
+
+	// baserel->cheapest_startup_path
+	elog(WARNING, "Happy 1  1111111111");
+	elog(LOG, "db721_GetForeignRelSize: %s", terrier.Bark().c_str());
 }
 
 /*
@@ -154,16 +205,17 @@ PgFdwRelationInfo *fpinfo;
 // /workspaces/cmu-db/build/postgres/lib/db721_fdw.so
 // /workspaces/cmu-db/cmudb/extensions/db721_fdw/src/db721_fdw.o
 extern "C" void db721_GetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
-                                    Oid foreigntableid) {
-  // TODO(721): Write me!
-  Dog scout("Scout");
-  elog(WARNING,"Happy 2 111");
-  // PathTarget target;
-  //  auto x1 = create_foreignscan_path(root,baserel,baserel->reltarget,100,200,300,NULL,baserel->all_partrels,NULL,NULL);
+									  Oid foreigntableid)
+{
+	// TODO(721): Write me!
+	Dog scout("Scout");
+	elog(WARNING, "Happy 2 111");
+	// PathTarget target;
+	//  auto x1 = create_foreignscan_path(root,baserel,baserel->reltarget,100,200,300,NULL,baserel->all_partrels,NULL,NULL);
 
-  // //  auto x1 = create_foreignscan_path()
-  // baserel->pathlist
- PgFdwRelationInfo *fpinfo = (PgFdwRelationInfo *) baserel->fdw_private;
+	// //  auto x1 = create_foreignscan_path()
+	// baserel->pathlist
+	PgFdwRelationInfo *fpinfo = (PgFdwRelationInfo *)baserel->fdw_private;
 	ForeignPath *path;
 	// List	   *ppi_list;
 	// ListCell   *lc;
@@ -179,74 +231,78 @@ extern "C" void db721_GetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
 	 * parameterization due to LATERAL refs in its tlist.
 	 */
 	path = create_foreignscan_path(root, baserel,
-								   NULL,	/* default pathtarget */
+								   NULL, /* default pathtarget */
 								   fpinfo->rows,
 								   fpinfo->startup_cost,
 								   fpinfo->total_cost,
 								   NIL, /* no pathkeys */
 								   baserel->lateral_relids,
-								   NULL,	/* no extra plan */
-								   NIL);	/* no fdw_private list */
-	add_path(baserel, (Path *) path);
+								   NULL, /* no extra plan */
+								   NIL); /* no fdw_private list */
+	add_path(baserel, (Path *)path);
 
 	/* Add paths with pathkeys */
 	// add_paths_with_pathkeys_for_rel(root, baserel, NULL);
 
-
-  elog(LOG, "db721_GetForeignPaths: %s", scout.Bark().c_str());
+	elog(LOG, "db721_GetForeignPaths: %s", scout.Bark().c_str());
 }
 
 extern "C" ForeignScan *
 db721_GetForeignPlan(PlannerInfo *root, RelOptInfo *baserel, Oid foreigntableid,
-                   ForeignPath *best_path, List *tlist, List *scan_clauses,
-                   Plan *outer_plan) {
-  // TODO(721): Write me!
-  elog(WARNING,"Happy 3");
-  Index		scan_relid = baserel->relid;
-  scan_clauses = extract_actual_clauses(scan_clauses, false);
+					 ForeignPath *best_path, List *tlist, List *scan_clauses,
+					 Plan *outer_plan)
+{
+	// TODO(721): Write me!
+	elog(WARNING, "Happy 3");
+	Index scan_relid = baserel->relid;
+	scan_clauses = extract_actual_clauses(scan_clauses, false);
 	// The where clauses is found in scan clauses
 	/* Create the ForeignScan node */
 	return make_foreignscan(tlist,
 							scan_clauses,
 							scan_relid,
-							NIL,	/* no expressions to evaluate */
+							NIL, /* no expressions to evaluate */
 							best_path->fdw_private,
-							NIL,	/* no custom tlist */
-							NIL,	/* no remote quals */
+							NIL, /* no custom tlist */
+							NIL, /* no remote quals */
 							outer_plan);
 }
 
-extern "C" void db721_BeginForeignScan(ForeignScanState *node, int eflags) {
-  // TODO(721): Write me!
-  elog(WARNING,"Happy 4");
+extern "C" void db721_BeginForeignScan(ForeignScanState *node, int eflags)
+{
+	// TODO(721): Write me!
+	// Get the table informatin here
+	elog(WARNING, "Happy 4");
 }
 
-extern "C" TupleTableSlot *db721_IterateForeignScan(ForeignScanState *node) {
-  // TODO(721): Write me!
-  // read contrib/file_fdw/file_fdw.c
-  elog(WARNING,"Happy 5");
-  char* er = "Hello123";
-//   auto x2 = CStringGetDatum(er);
-//   auto x3 = Float4GetDatum(2);
-//   auto x4 = Float4GetDatum(3);
-//   TupleTableSlot *slot = node->ss.ss_ScanTupleSlot;
-//   Datum* xs= new Datum[3] {x2,x3,x4};
-//   slot->tts_values=xs;
-//   slot->tts_nvalid=3;
-//   slot->tts_isnull= new bool[3]{false};
-//   slot->tts_flags= TTS_FLAG_FIXED;
-//   slot->tts_ops->materialize(slot);
-	HeapTupleTableSlot
-//   return slot;
-return NULL;
+extern "C" TupleTableSlot *db721_IterateForeignScan(ForeignScanState *node)
+{
+	// TODO(721): Write me!
+	// read contrib/file_fdw/file_fdw.c
+	elog(WARNING, "Happy 5");
+	char *er = "Hello123";
+	TupleTableSlot *slot = node->ss.ss_ScanTupleSlot;
+	bool found;
+	ErrorContextCallback errcallback;
+	ExecClearTuple(slot);
+	found = NextCopyFromdb721(slot->tts_values, slot->tts_isnull);
+	if (found)
+	{
+		ExecStoreVirtualTuple(slot);
+		return slot;
+	}
+
+	return NULL;
 }
 
-extern "C" void db721_ReScanForeignScan(ForeignScanState *node) {
-  // TODO(721): Write me!
-  elog(WARNING,"Happy 6");
+extern "C" void db721_ReScanForeignScan(ForeignScanState *node)
+{
+	// TODO(721): Write me!
+	elog(WARNING, "Happy 6");
 }
 
-extern "C" void db721_EndForeignScan(ForeignScanState *node) {
-  // TODO(721): Write me!
-  elog(WARNING,"Happy 7");
+extern "C" void db721_EndForeignScan(ForeignScanState *node)
+{
+	// TODO(721): Write me!
+	elog(WARNING, "Happy 7");
 }
